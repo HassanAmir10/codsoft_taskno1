@@ -1,0 +1,51 @@
+import pandas as pd
+import numpy as np
+df= pd.read_csv('D:/tested.csv')
+df.head(5)
+df.describe()
+df.dtypes
+df.isnull().sum()
+df["Age"] = df["Age"].fillna(df["Age"].mean())
+df["Fare"] = df["Fare"].fillna(df["Fare"].mean())
+df.isnull().sum()
+Embarkeds = df.Embarked.unique()
+for Embarked in Embarkeds:
+    print("Embarked:", Embarked)
+df['Embarked'] = df["Embarked"].map({'Q':0, 'S':1, 'C':2}).astype(int)
+df["Embarked"].head(5)
+df["Sex"] = df["Sex"].map({'female':1, 'male':0}).astype(int)
+df["Sex"].head(5)
+df.dtypes
+df["Age"] = df.Age.astype(int)
+df["Fare"] = df.Fare.astype(int)
+df.head(5)
+uselessData = df.drop(["PassengerId", "Name", "Ticket", "Cabin"], axis=1, inplace = True)
+df.head(5)
+#mpl.plot()
+df[(df["Sex"] == 1) & (df["Survived"]==1)]
+import seaborn as sb
+import matplotlib.pyplot as mpl
+_, ax = mpl.subplots(figsize = (10, 7))
+sb.histplot(data = df, x = "Age", hue = "Survived", multiple = "stack", kde = True, palette=["red", "green"], ax = ax)
+ax.set_title("Histogram for Age with Survival")
+ax.set_xlabel("Age")
+ax.set_ylabel("Number of passengers")
+ax.legend(title = "Legends", labels = ["Survived", "Not survived"])
+mpl.plot()
+_, ax = mpl.subplots(figsize = (10, 7))
+sb.histplot(data = df, x = "Fare", hue = "Survived", multiple = "stack", kde = True, palette = ["red", "green"], ax = ax)
+ax.set_title("Histogram for Fare with Survival")
+ax.set_xlabel("Fare")
+ax.set_ylabel("Number of passengers")
+ax.legend(title = "Legends", labels = ["Survived", "Not survived"])
+mpl.plot()
+from sklearn.model_selection import train_test_split
+Input = df.drop(['Survived'], axis=1)
+Output = df.iloc[:,1]
+x_train, x_test, y_train, y_test = train_test_split(Input, Output, test_size = 0.2, random_state = 1)
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score as score
+LR = LogisticRegression()
+LR.fit(x_train, y_train)
+PredictedValue = LR.predict(x_test)
+print("Accuracy = {:0.2f}%".format(score(PredictedValue, y_test)*100))
